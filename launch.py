@@ -126,6 +126,13 @@ def download_models(default_model, previous_default_models, checkpoint_downloads
     for file_name, url in lora_downloads.items():
         load_file_from_url(url=url, model_dir=config.path_loras, file_name=file_name)
 
+    # যদি শুধুমাত্র LoRA ডাউনলোডের অপশন থাকে এবং বর্তমান মডেলটি না থাকে, তবে একটি ওয়ার্নিং দেওয়া হবে
+    if args.only_download_loras:
+        checkpoint_path = os.path.join(config.path_checkpoints, default_model)
+        if not os.path.exists(checkpoint_path):
+            print(f'[DeFooocus] WARNING: Default checkpoint "{default_model}" not found at {checkpoint_path}.')
+            print('[DeFooocus] Please ensure you have placed the checkpoint in the models/checkpoints folder.')
+
     return default_model, checkpoint_downloads
 
 

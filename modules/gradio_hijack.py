@@ -18,7 +18,11 @@ from gradio_client.serializing import ImgSerializable
 from PIL import Image as _Image  # using _ to minimize namespace pollution
 
 from gradio import processing_utils, utils
-from gradio.components.base import IOComponent, _Keywords, Block
+try:
+    from gradio.components.base import IOComponent, _Keywords, Block
+except ImportError:
+    # গ্রাডিওর নতুন ভার্সনে (৪.০+) IOComponent এর নাম পরিবর্তন হয়ে Component হয়েছে
+    from gradio.components.base import Component as IOComponent, _Keywords, Block
 from gradio.deprecation import warn_style_method_deprecation
 from gradio.events import (
     Changeable,
