@@ -20,6 +20,13 @@ import args_manager
 import copy
 import launch
 
+try:
+    import modules.gradio_hijack as grh
+except Exception:
+    grh = gr
+    if not hasattr(grh, 'all_components'):
+        grh.all_components = []
+
 from modules.sdxl_styles import legal_style_names
 from modules.private_logger import get_current_html_path
 from modules.ui_gradio_extensions import reload_javascript
