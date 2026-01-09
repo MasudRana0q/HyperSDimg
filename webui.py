@@ -188,7 +188,8 @@ with shared.gradio_root:
                             model_management.interrupt_current_processing()
                         return currentTask
 
-                    stop_button.click(stop_clicked, inputs=currentTask, outputs=currentTask, queue=False, show_progress=False, _js='cancelGenerateForever')
+                    # গ্রাডিও ৪.০+ এ _js প্যারামিটার সাপোর্ট করে না, তাই রিমুভ করা হয়েছে
+                    stop_button.click(stop_clicked, inputs=currentTask, outputs=currentTask, queue=False, show_progress=False)
                     skip_button.click(skip_clicked, inputs=currentTask, outputs=currentTask, queue=False, show_progress=False)
             with gr.Row(elem_classes='advanced_check_row'):
                 input_image_checkbox = gr.Checkbox(label='Input Image', value=False, container=False, elem_classes='min_check')
