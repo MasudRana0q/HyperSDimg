@@ -30,16 +30,27 @@ except ImportError:
     # গ্রাডিওর নতুন ভার্সনে এটি আর নেই, তাই এটি মক করা হচ্ছে
     def warn_style_method_deprecation(*args, **kwargs):
         pass
-from gradio.events import (
-    Changeable,
-    Clearable,
-    Editable,
-    EventListenerMethod,
-    Selectable,
-    Streamable,
-    Uploadable,
-)
-from gradio.interpretation import TokenInterpretable
+try:
+    from gradio.events import (
+        Changeable,
+        Clearable,
+        Editable,
+        EventListenerMethod,
+        Selectable,
+        Streamable,
+        Uploadable,
+    )
+except ImportError:
+    # গ্রাডিওর নতুন ভার্সনে (৪.০+) এই ক্লাসগুলো সরাসরি ইমপোর্ট করা যায় না বা পরিবর্তন হয়েছে
+    # তাই আমরা এগুলোকে অবজেক্ট হিসেবে মক করছি যাতে কোড ক্র্যাশ না করে
+    Changeable = Clearable = Editable = Selectable = Streamable = Uploadable = object
+    class EventListenerMethod:
+        pass
+
+try:
+    from gradio.interpretation import TokenInterpretable
+except ImportError:
+    TokenInterpretable = object
 
 set_documentation_group("component")
 _Image.init()  # fixes https://github.com/gradio-app/gradio/issues/2843
