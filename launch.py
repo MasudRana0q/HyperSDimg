@@ -86,18 +86,19 @@ os.environ["U2NET_HOME"] = config.path_inpaint
 
 
 def download_models(default_model, previous_default_models, checkpoint_downloads, embeddings_downloads, lora_downloads):
-    # যদি শুধুমাত্র LoRA ডাউনলোডের অপশন সিলেক্ট করা থাকে, তবে বড় ফাইলগুলো বাদ দেওয়া হবে
+    # fooocus_expansion ফাইলটি ছোট এবং প্রয়োজনীয়, তাই সবসময় ডাউনলোড করা হবে
+    load_file_from_url(
+        url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
+        model_dir=config.path_fooocus_expansion,
+        file_name='pytorch_model.bin'
+    )
+    
+    # যদি শুধুমাত্র LoRA ডাউনলোডের অপশন সিলেক্ট করা থাকে, তবে বড় ফাইলগুলো বাদ দেওয়া হবে
     if not args.only_download_loras:
         for file_name, url in vae_approx_filenames:
             load_file_from_url(url=url, model_dir=config.path_vae_approx, file_name=file_name)
-
-        load_file_from_url(
-            url='https://huggingface.co/lllyasviel/misc/resolve/main/fooocus_expansion.bin',
-            model_dir=config.path_fooocus_expansion,
-            file_name='pytorch_model.bin'
-        )
     else:
-        print('[DeFooocus] Skipping all non-LoRA downloads as requested.')
+        print('[DeFooocus] Skipping VAE and other large files as requested.')
 
     if args.disable_preset_download:
         print('Skipped model download.')
