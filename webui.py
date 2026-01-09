@@ -10,7 +10,8 @@ import modules.html
 import modules.async_worker as worker
 import modules.constants as constants
 import modules.flags as flags
-import modules.gradio_hijack as grh
+# গ্রাডিও ৪.০+ এর সাথে gradio_hijack incompatible, তাই ডিসেবল করা হয়েছে
+# import modules.gradio_hijack as grh
 import modules.style_sorter as style_sorter
 import modules.meta_parser
 from modules.rembg import rembg_run
