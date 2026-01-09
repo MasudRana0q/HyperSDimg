@@ -23,7 +23,13 @@ try:
 except ImportError:
     # গ্রাডিওর নতুন ভার্সনে (৪.০+) IOComponent এর নাম পরিবর্তন হয়ে Component হয়েছে
     from gradio.components.base import Component as IOComponent, _Keywords, Block
-from gradio.deprecation import warn_style_method_deprecation
+
+try:
+    from gradio.deprecation import warn_style_method_deprecation
+except ImportError:
+    # গ্রাডিওর নতুন ভার্সনে এটি আর নেই, তাই এটি মক করা হচ্ছে
+    def warn_style_method_deprecation(*args, **kwargs):
+        pass
 from gradio.events import (
     Changeable,
     Clearable,
