@@ -341,7 +341,8 @@ with shared.gradio_root:
 
                             return results
 
-                        metadata_input_image.upload(trigger_metadata_preview, inputs=metadata_input_image,
+                        # গ্রাডিও ৪.০+ এ .upload() নেই, তাই .change() ব্যবহার করা হচ্ছে
+                        metadata_input_image.change(trigger_metadata_preview, inputs=metadata_input_image,
                                                     outputs=metadata_json, queue=False, show_progress=True)
 
             switch_js = "(x) => {if(x){viewer_to_bottom(100);viewer_to_bottom(500);}else{viewer_to_top();} return x;}"
