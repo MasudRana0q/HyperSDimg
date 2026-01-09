@@ -42,15 +42,21 @@ try:
     )
 except ImportError:
     # গ্রাডিওর নতুন ভার্সনে (৪.০+) এই ক্লাসগুলো সরাসরি ইমপোর্ট করা যায় না বা পরিবর্তন হয়েছে
-    # তাই আমরা এগুলোকে অবজেক্ট হিসেবে মক করছি যাতে কোড ক্র্যাশ না করে
-    Changeable = Clearable = Editable = Selectable = Streamable = Uploadable = object
+    # ডুপ্লিকেট বেস ক্লাস এরর এড়াতে আমরা এগুলোকে ইউনিক ক্লাস হিসেবে মক করছি
+    class Changeable: pass
+    class Clearable: pass
+    class Editable: pass
+    class Selectable: pass
+    class Streamable: pass
+    class Uploadable: pass
+    
     class EventListenerMethod:
         pass
 
 try:
     from gradio.interpretation import TokenInterpretable
 except ImportError:
-    TokenInterpretable = object
+    class TokenInterpretable: pass
 
 set_documentation_group("component")
 _Image.init()  # fixes https://github.com/gradio-app/gradio/issues/2843
