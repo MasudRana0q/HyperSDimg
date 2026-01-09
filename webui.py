@@ -3,6 +3,7 @@ import random
 import os
 import json
 import time
+import inspect
 import shared
 import modules.config
 import fooocus_version
@@ -28,6 +29,26 @@ except Exception:
     grh = gr
     if not hasattr(grh, 'all_components'):
         grh.all_components = []
+
+
+def gradio_image_component(**kwargs):
+    image_cls = grh.Image
+    try:
+        sig = inspect.signature(image_cls.__init__)
+        params = sig.parameters
+        accepts_var_kw = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values())
+    except Exception:
+        return image_cls(**kwargs)
+
+    if 'source' in kwargs and 'source' not in params:
+        src = kwargs.pop('source')
+        if 'sources' in params:
+            kwargs['sources'] = [src] if isinstance(src, str) else src
+
+    if not accepts_var_kw:
+        kwargs = {k: v for k, v in kwargs.items() if k in params}
+
+    return image_cls(**kwargs)
 
 from modules.sdxl_styles import legal_style_names
 from modules.private_logger import get_current_html_path
@@ -150,10 +171,10 @@ with shared.gradio_root:
                 gr.Markdown("Powered by [🦜 Photopea API](https://www.photopea.com/api)")
             with gr.Tab("rembg"):
                 with gr.Column(scale=1):
-                    rembg_input = grh.Image(label='Drag above image to here', source='upload', type='filepath', scale=20)
+                    rembg_input = gradio_image_component(label='Drag above image to here', source='upload', type='filepath', scale=20)
                     rembg_button = gr.Button(value="Remove Background", interactive=True, scale=1)
                 with gr.Column(scale=3):
-                    rembg_output = grh.Image(label='rembg Output', interactive=False, height=380)
+                    rembg_output = gradio_image_component(label='rembg Output', interactive=False, height=380)
                 gr.Markdown("Powered by [🪄 rembg 2.0.53](https://github.com/danielgatis/rembg/releases/tag/v2.0.53)")
             rembg_button.click(rembg_run, inputs=rembg_input, outputs=rembg_output, show_progress="full") 
             with gr.Tab("Online"):
@@ -210,7 +231,7 @@ with shared.gradio_root:
                     with gr.TabItem(label='Upscale or Variation') as uov_tab:
                         with gr.Row():
                             with gr.Column():
-                                uov_input_image = grh.Image(label='Drag above image to here', source='upload', type='numpy')
+                                uov_input_image = gradio_image_component(label='Drag above image to here', source='upload', type='numpy')
                             with gr.Column():
                                 uov_method = gr.Radio(label='Upscale or Variation:', choices=flags.uov_list, value=flags.disabled)
                                 gr.HTML('<a href="https://github.com/lllyasviel/Fooocus/discussions/390" target="_blank">\U0001F4D4 Document</a>')
@@ -224,7 +245,7 @@ with shared.gradio_root:
                             ip_ad_cols = []
                             for _ in range(flags.controlnet_image_count):
                                 with gr.Column():
-                                    ip_image = grh.Image(label='Image', source='upload', type='numpy', show_label=False, height=300)
+                                    ip_image = gradio_image_component(label='Image', source='upload', type='numpy', show_label=False, height=300)
                                     ip_images.append(ip_image)
                                     ip_ctrls.append(ip_image)
                                     with gr.Column(visible=False) as ad_col:
@@ -261,7 +282,7 @@ with shared.gradio_root:
                     with gr.TabItem(label='Inpaint or Outpaint') as inpaint_tab:
                         with gr.Row():
                             with gr.Column():
-                                inpaint_input_image = grh.Image(label='Drag inpaint or outpaint image to here', source='upload', type='numpy', tool='sketch', height=500, brush_color="#FFFFFF", elem_id='inpaint_canvas')
+                                inpaint_input_image = gradio_image_component(label='Drag inpaint or outpaint image to here', source='upload', type='numpy', tool='sketch', height=500, brush_color="#FFFFFF", elem_id='inpaint_canvas')
                                 inpaint_mode = gr.Dropdown(choices=modules.flags.inpaint_options, value=modules.flags.inpaint_option_default, label='Method')
                                 inpaint_additional_prompt = gr.Textbox(placeholder="Describe what you want to inpaint.", elem_id='inpaint_additional_prompt', label='Inpaint Additional Prompt', visible=False)
                                 outpaint_selections = gr.CheckboxGroup(choices=['Left', 'Right', 'Top', 'Bottom'], value=[], label='Outpaint Direction')
@@ -273,7 +294,7 @@ with shared.gradio_root:
                                 example_inpaint_prompts.click(lambda x: x[0], inputs=example_inpaint_prompts, outputs=inpaint_additional_prompt, show_progress=False, queue=False)
 
                             with gr.Column(visible=False) as inpaint_mask_generation_col:
-                                inpaint_mask_image = grh.Image(label='Mask Upload', source='upload', type='numpy',
+                                inpaint_mask_image = gradio_image_component(label='Mask Upload', source='upload', type='numpy',
                                                                height=500)
                                 inpaint_mask_model = gr.Dropdown(label='Mask generation model',
                                                                  choices=flags.inpaint_mask_models,
@@ -325,7 +346,7 @@ with shared.gradio_root:
                     with gr.TabItem(label='Describe') as desc_tab:
                         with gr.Row():
                             with gr.Column():
-                                desc_input_image = grh.Image(label='Drag any image to here', source='upload', type='numpy')
+                                desc_input_image = gradio_image_component(label='Drag any image to here', source='upload', type='numpy')
                             with gr.Column():
                                 desc_method = gr.Radio(
                                     label='Content Type',
@@ -335,7 +356,7 @@ with shared.gradio_root:
                                 gr.HTML('<a href="https://github.com/lllyasviel/Fooocus/discussions/1363" target="_blank">\U0001F4D4 Document</a>')
                     with gr.TabItem(label='Metadata') as load_tab:
                         with gr.Column():
-                            metadata_input_image = grh.Image(label='Drag any image generated by Fooocus here', source='upload', type='filepath')
+                            metadata_input_image = gradio_image_component(label='Drag any image generated by Fooocus here', source='upload', type='filepath')
                             metadata_json = gr.JSON(label='Metadata')
                             metadata_import_button = gr.Button(value='Apply Metadata')
 
